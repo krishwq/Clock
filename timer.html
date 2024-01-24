@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <script src="https://kit.fontawesome.com/4066c38b65.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="timer.css">
+</head>
+
+<body>
+    <div class="nav">
+        <span class="navitem"><a href="clock.html">Clock</a></span>
+        <span class="navitem"><a href="index.html">Stopwatch</a></span>
+        <span class="timer">Timer</span>
+    </div>
+    <div class="container">
+        <div class="watch">
+            <div class="outercircle">
+                <div class="semicircle1"></div>
+                <div class="semicircle2"></div>
+                <div class="semicircle3"></div>
+                <div class="innercircle">
+                    <span class="text minute">0 :</span>
+                    <span class="text sec">&nbsp; 0 :</span>
+                    <span class="text msec">&nbsp; 0</span>
+                </div>
+            </div>
+            <div class="button-wrapper">
+                <button class="button reset">Reset</button>
+                <button class="button play">Start</button>
+                <button class="button restart"><i class="fa-solid fa-hourglass-end"
+                        style=" font-size: 25px;"></i></button>
+            </div>
+        </div>
+        <div class="set-time hidden">
+            <div class="timer-input">
+                <div class="input">
+                    <input type="number" id="hours" maxlength="2" placeholder="00" oninput="cheekhour()"><span
+                        class="colon">:</span>
+                    <input type="number" id="minutes" maxlength="2" placeholder="00" oninput="cheekminute()"><span
+                        class="colon">:</span>
+                    <input type="number" id="seconds" maxlength="2"placeholder="00" oninput="cheeksecond()">
+                </div>
+                <div class="time-text">
+                    <span class="timer-data">h</span><span class="colon">:</span>
+                    <span class="timer-data">m</span><span class="colon">:</span>
+                    <span class="timer-data">s</span>
+                </div>
+                <div class="start-set">
+                    <button class="button reset2 hidden2" onclick="start()">Start</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const resetbutton = document.getElementsByClassName("restart")[0];
+        const timerdisplay = document.getElementsByClassName("set-time")[0];
+        const startbutton = document.getElementsByClassName("reset2")[0];
+        const playbutton = document.getElementsByClassName("play")[0];
+        const restartbutton = document.getElementsByClassName("reset")[0];
+        const hours=document.getElementsByClassName("minute")[0];
+        const min=document.getElementsByClassName("sec")[0];
+        const sec=document.getElementsByClassName("msec")[0];
+        const hourdisplay=document.getElementById('hours');
+        const minutedisplay=document.getElementById('minutes');
+        const secdisplay=document.getElementById('seconds');
+        const bg = document.getElementsByClassName("outercircle")[0];
+        const semicircle1 = document.getElementsByClassName("semicircle1")[0];
+        const semicircle2 = document.getElementsByClassName("semicircle2")[0];
+        const semicircle3 = document.getElementsByClassName("semicircle3")[0];
+
+
+        
+        let hour, minute, second;
+        let hourcount;
+        let minutecount;
+        let secondcount;
+        let cheekcount;
+        let count;
+        let hour_permanet,minute_permanet,second_permanet;
+        let isplay=false;
+        let audio_end=new Audio('kitchen-timer-33043.mp3');
+        let audio_start=new Audio('start-13691.mp3');
+        let audio_stop=new Audio('stop-13692.mp3');
+       
+        function cheekhour() {
+            hour = document.getElementById('hours').value;
+            if (hour >= 0 && minute >= 0 && minute < 60 && second >= 0 && second < 60) {
+                startbutton.classList.remove("hidden2");
+            } else {
+                startbutton.classList.add("hidden2");
+            }
+            hour=parseInt(hour);
+            hour_permanet=hour;
+        }
+        function cheekminute() {
+            minute = document.getElementById('minutes').value;
+            if (hour >= 0 && minute >= 0 && minute < 60 && second >= 0 && second < 60) {
+                startbutton.classList.remove("hidden2");
+            } else {
+                startbutton.classList.add("hidden2");
+            }
+            minute=parseInt(minute);
+            minute_permanet=minute;
+        }
+        function cheeksecond() {
+            second = document.getElementById('seconds').value;
+            if (hour >= 0 && minute >= 0 && minute < 60 && second >= 0 && second < 60) {
+                startbutton.classList.remove("hidden2");
+            } else {
+                startbutton.classList.add("hidden2");
+            }
+            second=parseInt(second);
+            second_permanet=second;
+        }
+        function animation_reset(){
+            semicircle3.style.opacity="1";
+            semicircle1.style.transform="rotate(0deg)";
+            semicircle2.style.transform="rotate(0deg)";
+            semicircle1.classList.remove("rotation1");
+            semicircle2.classList.remove("rotation2");
+            semicircle3.classList.remove("rotation3");
+            
+            semicircle1.style.transitionTimingFunction = "linear";
+            semicircle2.style.transitionTimingFunction = "linear";
+            semicircle3.style.transitionTimingFunction = "linear";
+            semicircle1.style.transitionDuration="0s";
+            semicircle2.style.transitionDuration="0s";
+            semicircle3.style.transitionDuration="0s";
+        }
+        
+        function animationstart(){
+            let time_permanent=(hour_permanet*3600)+(minute_permanet*60)+second_permanet;
+        let time=(hour*3600)+(minute*60)+second;
+        let worktime=time_permanent-time;
+        let workangle=(360/time_permanent)*worktime;
+            semicircle1.style.transitionDuration=`${time/2}s`;
+            semicircle2.style.transform="rotate(360deg)";
+            semicircle1.style.transform="rotate(180deg)";
+            semicircle1.style.transitionTimingFunction = "linear";
+            semicircle2.style.transitionDuration=`${time}s`;
+            semicircle2.style.transitionTimingFunction = "linear";
+            semicircle1.classList.add("rotation1");
+            semicircle2.classList.add("rotation2");
+            semicircle3.classList.add("rotation3");
+            if(worktime<time_permanent/2){
+            semicircle3.style.transitionDelay=`${(time_permanent/2)-worktime}s`;
+            }
+        }
+        function animationstop(){
+            let time_permanent=hour_permanet*3600+minute_permanet*60+second_permanet;
+        let time=hour*3600+minute*60+second;
+        let worktime=time_permanent-time;
+        let workangle=(360/time_permanent)*worktime;
+        semicircle1.classList.remove("rotation1");
+        semicircle2.classList.remove("rotation2");
+        semicircle3.classList.remove("rotation3");
+        if(worktime>time_permanent/2){
+            semicircle2.style.transform=`rotate(${workangle}deg)`;
+            semicircle1.style.transform=" rotate(180deg)";
+            semicircle3.style.opacity="0";
+        }
+        else{
+            semicircle2.style.transform=`rotate(${workangle}deg)`;
+            semicircle1.style.transform=`rotate(${workangle}deg)`;
+        }
+        
+        }
+        function start() {
+            audio_start.play();
+            animationstart();
+            timerdisplay.classList.remove("hidden");
+            playbutton.innerHTML='Stop';
+            hours.innerHTML=`${hour} :`;
+            sec.innerHTML=`&nbsp;${second}`;
+            min.innerHTML=`&nbsp;${minute} :`;
+            semicircle1.classList.add("rotation1");
+            semicircle2.classList.add("rotation2");
+            semicircle3.classList.add("rotation3");
+            count=setInterval(()=>{
+                if(second==0 && (minute>0 || hour>0)){
+                    second=59;
+                    if(minute==0 && hour>0){
+                        minute=59;
+                        hour--;
+                    } else{
+                    minute--;
+                    }
+                }
+                else if(second>0 && minute>=0 && hour>=0){
+                    second--;
+                }
+               sec.innerHTML=`&nbsp;${second}`;
+               min.innerHTML=`&nbsp;${minute} :`;
+               hours.innerHTML=`${hour} :`;
+
+               if(second<=0 && minute<=0 && hour<=0){
+                    audio_end.play();
+                    bg.classList.add("text-effect");
+                    semicircle1.classList.remove("rotation1");
+            semicircle2.classList.remove("rotation2");
+            // semicircle3.classList.remove("rotation3");
+                }
+                
+            },1000);
+           
+          isplay=true;
+        }
+        function sound(){
+            if(isplay){
+                audio_stop.play();
+            }
+            else{
+                audio_start.play();
+            }
+        }
+       
+        const pause=()=>{
+            if(isplay && second<=0 && hour<=0 && minute<=0){
+
+            playbutton.innerHTML='Start';
+            audio_end.pause();
+            audio_end.currentTime=0;
+               clearInterval(count);
+               bg.classList.remove("text-effect");
+               hours.innerHTML=`${hour_permanet} :`;
+               min.innerHTML=`&nbsp;0 :`;
+               sec.innerHTML=`&nbsp;0`;
+               second=0;
+               hour=0;
+               minute=0;
+            animation_reset();
+               isplay=false;
+            }
+            else if(isplay){
+                animationstop();
+                sound();
+            playbutton.innerHTML='Start';
+                clearInterval(count);
+                 isplay=false;
+            } else{
+                animationstart();
+                sound();
+            bg.classList.remove("text-effect");
+                start();
+            }
+        }
+        const restart=()=>{
+            if(isplay){
+                audio_stop.play();
+            }
+            clearInterval(count);
+            playbutton.innerHTML='Start';
+            audio_end.pause();
+            audio_end.currentTime=0;
+            bg.classList.remove("text-effect");
+               hours.innerHTML=`${hour_permanet} :`;
+               min.innerHTML=`&nbsp;${minute_permanet} :`;
+               sec.innerHTML=`&nbsp;${second_permanet}`;
+               second=second_permanet;
+               hour=hour_permanet;
+               minute=minute_permanet;
+              animation_reset();
+               isplay=false;
+        }
+        const reset = () => {
+            if(isplay){
+                audio_stop.play();
+            }
+            clearInterval(count);
+            audio_end.pause();
+            audio_end.currentTime=0;
+            hours.innerHTML=`0 :`;
+               min.innerHTML=`&nbsp;0 :`;
+               sec.innerHTML=`&nbsp;0`;
+               hour=0;minute=0;
+               second=0;
+               isplay=false;
+            playbutton.innerHTML='Start';
+            hourdisplay.value="";
+            minutedisplay.value="";
+            secdisplay.value="";
+            bg.classList.remove("text-effect");
+            animation_reset();
+            startbutton.classList.add("hidden2");
+            timerdisplay.classList.add("hidden");
+        }
+        resetbutton.addEventListener("click", reset);
+        playbutton.addEventListener("click",pause);
+        restartbutton.addEventListener("click",restart);
+
+
+    </script>
+
+</body>
+
+</html>
